@@ -11,6 +11,7 @@ Gem::Specification.new do |s|
   s.email = %q{jens.wille@uni-koeln.de}
   s.extra_rdoc_files = ["COPYING", "ChangeLog", "README"]
   s.files = ["lib/apache/upload_merger.rb", "lib/apache/upload_merger/version.rb", "README", "ChangeLog", "Rakefile", "COPYING"]
+  s.homepage = %q{http://github.com/blackwinter/apache_upload_merger}
   s.rdoc_options = ["--charset", "UTF-8", "--title", "apache_upload_merger Application documentation", "--main", "README", "--line-numbers", "--inline-source", "--all"]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.6}

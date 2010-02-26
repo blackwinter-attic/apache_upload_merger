@@ -90,8 +90,9 @@
       <h3 class="section-bar">Methods</h3>
 
       <div class="name-list">
-      <a href="#M000003">copy</a>&nbsp;&nbsp;
+      <a href="#M000003">find</a>&nbsp;&nbsp;
       <a href="#M000002">handler</a>&nbsp;&nbsp;
+      <a href="#M000004">merge</a>&nbsp;&nbsp;
       <a href="#M000001">new</a>&nbsp;&nbsp;
       </div>
     </div>
@@ -115,6 +116,11 @@
 
       <div class="name-list">
         <table summary="Constants">
+        <tr class="top-aligned-row context-row">
+          <td class="context-item-name">MERGE_SIZE</td>
+          <td>=</td>
+          <td class="context-item-value">32 * 1024 * 1024</td>
+        </tr>
         <tr class="top-aligned-row context-row">
           <td class="context-item-name">MODE</td>
           <td>=</td>
@@ -162,14 +168,14 @@ upload base directories.
             onclick="toggleCode('M000001-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000001-source">
 <pre>
-    <span class="ruby-comment cmt"># File lib/apache/upload_merger.rb, line 44</span>
-44:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">map</span> = {})
-45:       <span class="ruby-ivar">@map</span> = {}
-46: 
-47:       <span class="ruby-identifier">map</span>.<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">prefix</span>, <span class="ruby-identifier">dir</span><span class="ruby-operator">|</span>
-48:         <span class="ruby-ivar">@map</span>[<span class="ruby-identifier">prefix</span>] = [<span class="ruby-node">%r{\A#{prefix}/(.*)}</span>, <span class="ruby-identifier">dir</span>]
-49:       }
-50:     <span class="ruby-keyword kw">end</span>
+    <span class="ruby-comment cmt"># File lib/apache/upload_merger.rb, line 46</span>
+46:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">map</span> = {})
+47:       <span class="ruby-ivar">@map</span> = {}
+48: 
+49:       <span class="ruby-identifier">map</span>.<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">prefix</span>, <span class="ruby-identifier">dir</span><span class="ruby-operator">|</span>
+50:         <span class="ruby-ivar">@map</span>[<span class="ruby-identifier">prefix</span>] = [<span class="ruby-node">%r{\A#{prefix}/(.*)}</span>, <span class="ruby-identifier">dir</span>]
+51:       }
+52:     <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
@@ -196,27 +202,27 @@ determined by its URL prefix. Otherwise, the original error will be thrown.
             onclick="toggleCode('M000002-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000002-source">
 <pre>
-    <span class="ruby-comment cmt"># File lib/apache/upload_merger.rb, line 56</span>
-56:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">handler</span>(<span class="ruby-identifier">request</span>)
-57:       <span class="ruby-identifier">request</span>.<span class="ruby-identifier">setup_cgi_env</span>
-58: 
-59:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">url</span>    = <span class="ruby-identifier">request</span>.<span class="ruby-identifier">subprocess_env</span>[<span class="ruby-value str">'REDIRECT_URL'</span>] <span class="ruby-keyword kw">and</span>
-60:          <span class="ruby-identifier">prefix</span> = <span class="ruby-identifier">request</span>.<span class="ruby-identifier">path_info</span>                      <span class="ruby-keyword kw">and</span>
-61:          <span class="ruby-identifier">map</span>    = <span class="ruby-ivar">@map</span>[<span class="ruby-identifier">prefix</span>]                           <span class="ruby-keyword kw">and</span>
-62:          <span class="ruby-identifier">path</span>   = <span class="ruby-identifier">url</span>[<span class="ruby-identifier">map</span>[<span class="ruby-value">0</span>], <span class="ruby-value">1</span>]                         <span class="ruby-keyword kw">and</span>
-63:          <span class="ruby-identifier">src</span>    = <span class="ruby-constant">Dir</span>[<span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-identifier">map</span>[<span class="ruby-value">1</span>], <span class="ruby-value str">'*'</span>, <span class="ruby-identifier">path</span>.<span class="ruby-identifier">untaint</span>)].<span class="ruby-identifier">first</span>
-64: 
-65:         <span class="ruby-identifier">dest</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-identifier">request</span>.<span class="ruby-identifier">server</span>.<span class="ruby-identifier">document_root</span>, <span class="ruby-identifier">prefix</span>, <span class="ruby-identifier">path</span>)
-66:         <span class="ruby-identifier">copy</span>(<span class="ruby-identifier">src</span>.<span class="ruby-identifier">untaint</span>, <span class="ruby-identifier">dest</span>.<span class="ruby-identifier">untaint</span>)
-67: 
-68:         <span class="ruby-identifier">request</span>.<span class="ruby-identifier">status</span> = <span class="ruby-constant">HTTP_OK</span>
-69:         <span class="ruby-identifier">request</span>.<span class="ruby-identifier">internal_redirect</span>(<span class="ruby-identifier">url</span>)
-70: 
-71:         <span class="ruby-constant">OK</span>
-72:       <span class="ruby-keyword kw">else</span>
-73:         <span class="ruby-constant">DECLINED</span>
-74:       <span class="ruby-keyword kw">end</span>
-75:     <span class="ruby-keyword kw">end</span>
+    <span class="ruby-comment cmt"># File lib/apache/upload_merger.rb, line 58</span>
+58:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">handler</span>(<span class="ruby-identifier">request</span>)
+59:       <span class="ruby-identifier">request</span>.<span class="ruby-identifier">add_common_vars</span>  <span class="ruby-comment cmt"># REDIRECT_URL</span>
+60: 
+61:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">url</span>    = <span class="ruby-identifier">request</span>.<span class="ruby-identifier">subprocess_env</span>[<span class="ruby-value str">'REDIRECT_URL'</span>] <span class="ruby-keyword kw">and</span>
+62:          <span class="ruby-identifier">prefix</span> = <span class="ruby-identifier">request</span>.<span class="ruby-identifier">path_info</span>                      <span class="ruby-keyword kw">and</span>
+63:          <span class="ruby-identifier">map</span>    = <span class="ruby-ivar">@map</span>[<span class="ruby-identifier">prefix</span>]                           <span class="ruby-keyword kw">and</span>
+64:          <span class="ruby-identifier">path</span>   = <span class="ruby-identifier">url</span>[<span class="ruby-identifier">map</span>[<span class="ruby-value">0</span>], <span class="ruby-value">1</span>].<span class="ruby-identifier">untaint</span>                 <span class="ruby-keyword kw">and</span>
+65:          <span class="ruby-identifier">src</span>    = <span class="ruby-identifier">find</span>(<span class="ruby-identifier">map</span>[<span class="ruby-value">1</span>], <span class="ruby-identifier">path</span>)
+66: 
+67:         <span class="ruby-identifier">merge</span>(<span class="ruby-identifier">src</span>,
+68:           <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-identifier">request</span>.<span class="ruby-identifier">server</span>.<span class="ruby-identifier">document_root</span>, <span class="ruby-identifier">prefix</span>, <span class="ruby-identifier">path</span>).<span class="ruby-identifier">untaint</span>)
+69: 
+70:         <span class="ruby-identifier">request</span>.<span class="ruby-identifier">status</span> = <span class="ruby-constant">HTTP_OK</span>
+71:         <span class="ruby-identifier">request</span>.<span class="ruby-identifier">internal_redirect</span>(<span class="ruby-identifier">url</span>)
+72: 
+73:         <span class="ruby-constant">OK</span>
+74:       <span class="ruby-keyword kw">else</span>
+75:         <span class="ruby-constant">DECLINED</span>
+76:       <span class="ruby-keyword kw">end</span>
+77:     <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>
@@ -229,24 +235,62 @@ determined by its URL prefix. Otherwise, the original error will be thrown.
 
         <div class="method-heading">
           <a href="#M000003" class="method-signature">
-          <span class="method-name">copy</span><span class="method-args">(src, dest)</span>
+          <span class="method-name">find</span><span class="method-args">(dir, path)</span>
           </a>
         </div>
       
         <div class="method-description">
+          <p>
+TODO: make it fast <b>and</b> secure
+</p>
           <p><a class="source-toggle" href="#"
             onclick="toggleCode('M000003-source');return false;">[Source]</a></p>
           <div class="method-source-code" id="M000003-source">
 <pre>
-    <span class="ruby-comment cmt"># File lib/apache/upload_merger.rb, line 79</span>
-79:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">copy</span>(<span class="ruby-identifier">src</span>, <span class="ruby-identifier">dest</span>)
-80:       <span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>(<span class="ruby-identifier">src</span>, <span class="ruby-value str">'r'</span>) { <span class="ruby-operator">|</span><span class="ruby-identifier">r</span><span class="ruby-operator">|</span>
-81:         <span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>(<span class="ruby-identifier">dest</span>, <span class="ruby-constant">MODE</span>, <span class="ruby-identifier">r</span>.<span class="ruby-identifier">stat</span>.<span class="ruby-identifier">mode</span>) { <span class="ruby-operator">|</span><span class="ruby-identifier">w</span><span class="ruby-operator">|</span>
-82:           <span class="ruby-constant">FileUtils</span>.<span class="ruby-identifier">copy_stream</span>(<span class="ruby-identifier">r</span>, <span class="ruby-identifier">w</span>)
-83:         }
-84:       }
-85:     <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Errno</span><span class="ruby-operator">::</span><span class="ruby-constant">EEXIST</span>
-86:     <span class="ruby-keyword kw">end</span>
+    <span class="ruby-comment cmt"># File lib/apache/upload_merger.rb, line 82</span>
+82:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">find</span>(<span class="ruby-identifier">dir</span>, <span class="ruby-identifier">path</span>)
+83:       <span class="ruby-constant">Dir</span>[<span class="ruby-node">&quot;#{dir}/*/&quot;</span>].<span class="ruby-identifier">find</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">subdir</span><span class="ruby-operator">|</span>
+84:         <span class="ruby-identifier">file</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-identifier">subdir</span>, <span class="ruby-identifier">path</span>).<span class="ruby-identifier">untaint</span>
+85:         <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">file</span> <span class="ruby-keyword kw">if</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exists?</span>(<span class="ruby-identifier">file</span>)
+86:       }
+87:     <span class="ruby-keyword kw">end</span>
+</pre>
+          </div>
+        </div>
+      </div>
+
+      <div id="method-M000004" class="method-detail">
+        <a name="M000004"></a>
+
+        <div class="method-heading">
+          <a href="#M000004" class="method-signature">
+          <span class="method-name">merge</span><span class="method-args">(src, dest)</span>
+          </a>
+        </div>
+      
+        <div class="method-description">
+          <p>
+TODO: optimize the copying case
+</p>
+          <p><a class="source-toggle" href="#"
+            onclick="toggleCode('M000004-source');return false;">[Source]</a></p>
+          <div class="method-source-code" id="M000004-source">
+<pre>
+     <span class="ruby-comment cmt"># File lib/apache/upload_merger.rb, line 90</span>
+ 90:     <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">merge</span>(<span class="ruby-identifier">src</span>, <span class="ruby-identifier">dest</span>)
+ 91:       <span class="ruby-identifier">stat</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">stat</span>(<span class="ruby-identifier">src</span>)
+ 92: 
+ 93:       <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">stat</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">&gt;</span> <span class="ruby-constant">MERGE_SIZE</span>
+ 94:         <span class="ruby-constant">File</span>.<span class="ruby-identifier">symlink</span>(<span class="ruby-identifier">src</span>, <span class="ruby-identifier">dest</span>)
+ 95:       <span class="ruby-keyword kw">else</span>
+ 96:         <span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>(<span class="ruby-identifier">src</span>) { <span class="ruby-operator">|</span><span class="ruby-identifier">src_</span><span class="ruby-operator">|</span>
+ 97:           <span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>(<span class="ruby-identifier">dest</span>, <span class="ruby-constant">MODE</span>, <span class="ruby-identifier">stat</span>.<span class="ruby-identifier">mode</span>) { <span class="ruby-operator">|</span><span class="ruby-identifier">dest_</span><span class="ruby-operator">|</span>
+ 98:             <span class="ruby-constant">FileUtils</span>.<span class="ruby-identifier">copy_stream</span>(<span class="ruby-identifier">src_</span>, <span class="ruby-identifier">dest_</span>)
+ 99:           }
+100:         }
+101:       <span class="ruby-keyword kw">end</span>
+102:     <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">Errno</span><span class="ruby-operator">::</span><span class="ruby-constant">EEXIST</span>
+103:     <span class="ruby-keyword kw">end</span>
 </pre>
           </div>
         </div>

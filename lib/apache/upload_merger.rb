@@ -34,6 +34,8 @@ module Apache
 
   class UploadMerger
 
+    MERGE_SIZE = 32 * 1024 * 1024
+
     MODE = Fcntl::O_CREAT|Fcntl::O_WRONLY|Fcntl::O_EXCL
 
     # Creates a new RubyHandler instance for the Apache web server. It
@@ -62,8 +64,8 @@ module Apache
          path   = url[map[0], 1].untaint                 and
          src    = find(map[1], path)
 
-        dest = File.join(request.server.document_root, prefix, path)
-        copy(src.untaint, dest.untaint)
+        merge(src,
+          File.join(request.server.document_root, prefix, path).untaint)
 
         request.status = HTTP_OK
         request.internal_redirect(url)
@@ -84,12 +86,19 @@ module Apache
       }
     end
 
-    def copy(src, dest)
-      File.open(src, 'r') { |r|
-        File.open(dest, MODE, r.stat.mode) { |w|
-          FileUtils.copy_stream(r, w)
+    # TODO: optimize the copying case
+    def merge(src, dest)
+      stat = File.stat(src)
+
+      if stat.size > MERGE_SIZE
+        File.symlink(src, dest)
+      else
+        File.open(src) { |src_|
+          File.open(dest, MODE, stat.mode) { |dest_|
+            FileUtils.copy_stream(src_, dest_)
+          }
         }
-      }
+      end
     rescue Errno::EEXIST
     end
 

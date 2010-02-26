@@ -54,13 +54,13 @@ module Apache
     # determined by its URL prefix. Otherwise, the original error will
     # be thrown.
     def handler(request)
-      request.setup_cgi_env
+      request.add_common_vars  # REDIRECT_URL
 
       if url    = request.subprocess_env['REDIRECT_URL'] and
          prefix = request.path_info                      and
          map    = @map[prefix]                           and
-         path   = url[map[0], 1]                         and
-         src    = Dir[File.join(map[1], '*', path.untaint)].first
+         path   = url[map[0], 1].untaint                 and
+         src    = find(map[1], path)
 
         dest = File.join(request.server.document_root, prefix, path)
         copy(src.untaint, dest.untaint)
@@ -75,6 +75,14 @@ module Apache
     end
 
     private
+
+    # TODO: make it fast *and* secure
+    def find(dir, path)
+      Dir["#{dir}/*/"].find { |subdir|
+        file = File.join(subdir, path).untaint
+        return file if File.exists?(file)
+      }
+    end
 
     def copy(src, dest)
       File.open(src, 'r') { |r|

@@ -34,17 +34,26 @@ module Apache
 
   class UploadMerger
 
-    MERGE_SIZE = 32 * 1024 * 1024
+    DEFAULT_MERGE_THRESHOLD = 32 * 1024 * 1024
 
-    MODE = Fcntl::O_CREAT|Fcntl::O_WRONLY|Fcntl::O_EXCL
+    CREATE_MODE = Fcntl::O_CREAT|Fcntl::O_WRONLY|Fcntl::O_EXCL
 
     # Creates a new RubyHandler instance for the Apache web server. It
     # is to be installed as a custom 404 ErrorDocument handler.
     #
     # The argument +map+ contains key/value pairs of URL prefixes and
     # upload base directories.
-    def initialize(map = {})
-      @map = {}
+    #
+    # +strategy+ determines how merging happens:
+    #
+    # <tt>:symlink</tt>:: Files are symlinked
+    # <tt>:copy</tt>::    Files are copied
+    # <tt>Integer</tt>::  Files whose size is below that threshold are
+    #                     copied, others are symlinked (default)
+    def initialize(map = {}, strategy = DEFAULT_MERGE_THRESHOLD)
+      @map, @strategy = {}, strategy
+
+      define_merger
 
       map.each { |prefix, dir|
         @map[prefix] = [%r{\A#{prefix}/(.*)}, dir]
@@ -52,20 +61,19 @@ module Apache
     end
 
     # If the current +request+ asked for a resource that's not there,
-    # it will be copied from one of the appropriate upload directories,
-    # determined by its URL prefix. Otherwise, the original error will
-    # be thrown.
+    # it will be merged from one of the appropriate upload directories,
+    # determined by its URL prefix. If no matching resource could be
+    # found, the original error will be thrown.
     def handler(request)
       request.add_common_vars  # REDIRECT_URL
 
       if url    = request.subprocess_env['REDIRECT_URL'] and
-         prefix = request.path_info                      and
+         prefix = request.path_info.untaint              and
          map    = @map[prefix]                           and
          path   = url[map[0], 1].untaint                 and
          src    = find(map[1], path)
 
-        merge(src,
-          File.join(request.server.document_root, prefix, path).untaint)
+        merge(src, File.join(request.server.document_root, prefix, path))
 
         request.status = HTTP_OK
         request.internal_redirect(url)
@@ -86,19 +94,34 @@ module Apache
       }
     end
 
-    # TODO: optimize the copying case
-    def merge(src, dest)
-      stat = File.stat(src)
-
-      if stat.size > MERGE_SIZE
-        File.symlink(src, dest)
-      else
-        File.open(src) { |src_|
-          File.open(dest, MODE, stat.mode) { |dest_|
-            FileUtils.copy_stream(src_, dest_)
-          }
-        }
+    def define_merger
+      case @strategy
+        when :symlink, :copy
+          alias_method :merge, @strategy
+        when Integer
+          alias_method :merge, :copy_or_symlink
+        else
+          raise ArgumentError, "illegal strategy #{@strategy.inspect}"
       end
+    end
+
+    def copy_or_symlink(src, dest)
+      stat = File.stat(src)
+      stat.size > @strategy ? symlink(src, dest) : copy(src, dest, stat)
+    end
+
+    def symlink(src, dest)
+      File.symlink(src, dest)
+    rescue Errno::EEXIST
+    end
+
+    # TODO: optimize?
+    def copy(src, dest, stat = File.stat(src))
+      File.open(src) { |src_|
+        File.open(dest, CREATE_MODE, stat.mode) { |dest_|
+          FileUtils.copy_stream(src_, dest_)
+        }
+      }
     rescue Errno::EEXIST
     end
 

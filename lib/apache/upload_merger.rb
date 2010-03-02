@@ -95,13 +95,10 @@ module Apache
     end
 
     def define_merger
-      case @strategy
-        when :symlink, :copy
-          alias_method :merge, @strategy
-        when Integer
-          alias_method :merge, :copy_or_symlink
-        else
-          raise ArgumentError, "illegal strategy #{@strategy.inspect}"
+      class << self; self; end.send :alias_method, :merge, case @strategy
+        when :symlink, :copy then @strategy
+        when Integer         then :copy_or_symlink
+        else raise ArgumentError, "illegal strategy #{@strategy.inspect}"
       end
     end
 

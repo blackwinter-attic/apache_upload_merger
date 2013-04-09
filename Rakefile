@@ -1,4 +1,4 @@
-require %q{lib/apache/upload_merger/version}
+require File.expand_path(%q{../lib/apache/upload_merger/version}, __FILE__)
 
 begin
   require 'hen'

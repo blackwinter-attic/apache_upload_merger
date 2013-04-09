@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+
+<title>class Apache::UploadMerger - apache_upload_merger Application documentation (v0.0.2)</title>
+
+<link type="text/css" media="screen" href="../rdoc.css" rel="stylesheet">
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "../";
+</script>
+
+<script type="text/javascript" charset="utf-8" src="../js/jquery.js"></script>
+<script type="text/javascript" charset="utf-8" src="../js/navigation.js"></script>
+<script type="text/javascript" charset="utf-8" src="../js/search_index.js"></script>
+<script type="text/javascript" charset="utf-8" src="../js/search.js"></script>
+<script type="text/javascript" charset="utf-8" src="../js/searcher.js"></script>
+<script type="text/javascript" charset="utf-8" src="../js/darkfish.js"></script>
+
+
+<body id="top" class="class">
+<nav id="metadata">
+  <nav id="home-section" class="section">
+  <h3 class="section-header">
+    <a href="../index.html">Home</a>
+    <a href="../table_of_contents.html#classes">Classes</a>
+    <a href="../table_of_contents.html#methods">Methods</a>
+  </h3>
+</nav>
+
+
+  <nav id="search-section" class="section project-section" class="initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <h3 class="section-header">
+      <input type="text" name="search" placeholder="Search" id="search-field"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </h3>
+  </form>
+
+  <ul id="search-results" class="initially-hidden"></ul>
+</nav>
+
+
+  
+
+  <div id="file-metadata">
+    <nav id="file-list-section" class="section">
+  <h3 class="section-header">Defined In</h3>
+  <ul>
+    <li>lib/apache/upload_merger.rb
+    <li>lib/apache/upload_merger/version.rb
+  </ul>
+</nav>
+
+    
+  </div>
+
+  <div id="class-metadata">
+    
+    <nav id="parent-class-section" class="section">
+  <h3 class="section-header">Parent</h3>
+  
+  <p class="link">Object
+  
+</nav>
+
+    
+    
+    <!-- Method Quickref -->
+<nav id="method-list-section" class="section">
+  <h3 class="section-header">Methods</h3>
+
+  <ul class="link-list">
+    
+    <li ><a href="#method-c-new">::new</a>
+    
+    <li ><a href="#method-i-copy">#copy</a>
+    
+    <li ><a href="#method-i-copy_or_symlink">#copy_or_symlink</a>
+    
+    <li ><a href="#method-i-define_merger">#define_merger</a>
+    
+    <li ><a href="#method-i-find">#find</a>
+    
+    <li ><a href="#method-i-handler">#handler</a>
+    
+    <li ><a href="#method-i-symlink">#symlink</a>
+    
+  </ul>
+</nav>
+
+  </div>
+
+  <div id="project-metadata">
+    <nav id="fileindex-section" class="section project-section">
+  <h3 class="section-header">Pages</h3>
+
+  <ul>
+  
+    <li class="file"><a href="../COPYING.html">COPYING</a>
+  
+    <li class="file"><a href="../ChangeLog.html">ChangeLog</a>
+  
+    <li class="file"><a href="../README.html">README</a>
+  
+  </ul>
+</nav>
+
+    <nav id="classindex-section" class="section project-section">
+  <h3 class="section-header">Class and Module Index</h3>
+
+  <ul class="link-list">
+  
+    <li><a href="../Apache.html">Apache</a>
+  
+    <li><a href="../Apache/UploadMerger.html">Apache::UploadMerger</a>
+  
+    <li><a href="../Apache/UploadMerger/Version.html">Apache::UploadMerger::Version</a>
+  
+  </ul>
+</nav>
+
+  </div>
+</nav>
+
+<div id="documentation">
+  <h1 class="class">class Apache::UploadMerger</h1>
+
+  <div id="description" class="description">
+    
+  </div><!-- description -->
+
+  
+  
+  
+  <section id="5Buntitled-5D" class="documentation-section">
+    
+
+    
+
+    
+    <!-- Constants -->
+    <section id="constants-list" class="section">
+      <h3 class="section-header">Constants</h3>
+      <dl>
+      
+        <dt id="CREATE_MODE">CREATE_MODE
+        
+        <dd class="description">
+        
+      
+        <dt id="DEFAULT_MERGE_THRESHOLD">DEFAULT_MERGE_THRESHOLD
+        
+        <dd class="description">
+        
+      
+        <dt id="VERSION">VERSION
+        
+        <dd class="description">
+        
+      
+      </dl>
+    </section>
+    
+
+    
+
+    <!-- Methods -->
+    
+     <section id="public-class-5Buntitled-5D-method-details" class="method-section section">
+      <h3 class="section-header">Public Class Methods</h3>
+
+    
+      <div id="method-c-new" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">new</span><span
+            class="method-args">(map = {}, strategy = DEFAULT_MERGE_THRESHOLD)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Creates a new RubyHandler instance for the <a
+href="../Apache.html">Apache</a> web server. It is to be installed as a
+custom 404 ErrorDocument handler.</p>
+
+<p>The argument <code>map</code> contains key/value pairs of URL prefixes and
+upload base directories.</p>
+
+<p><code>strategy</code> determines how merging happens:</p>
+<dl class="rdoc-list note-list"><dt><code>:symlink</code>
+<dd>
+<p>Files are symlinked</p>
+</dd><dt><code>:copy</code>
+<dd>
+<p>Files are copied</p>
+</dd><dt><code>Integer</code>
+<dd>
+<p>Files whose size is below that threshold are copied, others are symlinked
+(default)</p>
+</dd></dl>
+          
+          
+
+          
+          <div class="method-source-code" id="new-source">
+            <pre><span class="ruby-comment"># File lib/apache/upload_merger.rb, line 55</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">map</span> = {}, <span class="ruby-identifier">strategy</span> = <span class="ruby-constant">DEFAULT_MERGE_THRESHOLD</span>)
+  <span class="ruby-ivar">@map</span>, <span class="ruby-ivar">@strategy</span> = {}, <span class="ruby-identifier">strategy</span>
+
+  <span class="ruby-identifier">define_merger</span>
+
+  <span class="ruby-identifier">map</span>.<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">prefix</span>, <span class="ruby-identifier">dir</span><span class="ruby-operator">|</span>
+    <span class="ruby-ivar">@map</span>[<span class="ruby-identifier">prefix</span>] = [<span class="ruby-node">%r{\A#{prefix}/(.*)}</span>, <span class="ruby-identifier">dir</span>]
+  }
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- new-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- new-method -->
+
+    
+    </section><!-- public-class-method-details -->
+  
+     <section id="public-instance-5Buntitled-5D-method-details" class="method-section section">
+      <h3 class="section-header">Public Instance Methods</h3>
+
+    
+      <div id="method-i-handler" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">handler</span><span
+            class="method-args">(request)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>If the current <code>request</code> asked for a resource that&#39;s not
+there, it will be merged from one of the appropriate upload directories,
+determined by its URL prefix. If no matching resource could be found, the
+original error will be thrown.</p>
+          
+          
+
+          
+          <div class="method-source-code" id="handler-source">
+            <pre><span class="ruby-comment"># File lib/apache/upload_merger.rb, line 69</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">handler</span>(<span class="ruby-identifier">request</span>)
+  <span class="ruby-identifier">request</span>.<span class="ruby-identifier">add_common_vars</span>  <span class="ruby-comment"># REDIRECT_URL</span>
+
+  <span class="ruby-keyword">if</span> <span class="ruby-identifier">url</span>    = <span class="ruby-identifier">request</span>.<span class="ruby-identifier">subprocess_env</span>[<span class="ruby-string">&#39;REDIRECT_URL&#39;</span>] <span class="ruby-keyword">and</span>
+     <span class="ruby-identifier">prefix</span> = <span class="ruby-identifier">request</span>.<span class="ruby-identifier">path_info</span>.<span class="ruby-identifier">untaint</span>              <span class="ruby-keyword">and</span>
+     <span class="ruby-identifier">map</span>    = <span class="ruby-ivar">@map</span>[<span class="ruby-identifier">prefix</span>]                           <span class="ruby-keyword">and</span>
+     <span class="ruby-identifier">path</span>   = <span class="ruby-identifier">url</span>[<span class="ruby-identifier">map</span>[<span class="ruby-value">0</span>], <span class="ruby-value">1</span>].<span class="ruby-identifier">untaint</span>                 <span class="ruby-keyword">and</span>
+     <span class="ruby-identifier">src</span>    = <span class="ruby-identifier">find</span>(<span class="ruby-identifier">map</span>[<span class="ruby-value">1</span>], <span class="ruby-identifier">path</span>)
+
+    <span class="ruby-identifier">merge</span>(<span class="ruby-identifier">src</span>, <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-identifier">request</span>.<span class="ruby-identifier">server</span>.<span class="ruby-identifier">document_root</span>, <span class="ruby-identifier">prefix</span>, <span class="ruby-identifier">path</span>))
+
+    <span class="ruby-identifier">request</span>.<span class="ruby-identifier">status</span> = <span class="ruby-constant">HTTP_OK</span>
+    <span class="ruby-identifier">request</span>.<span class="ruby-identifier">internal_redirect</span>(<span class="ruby-identifier">url</span>)
+
+    <span class="ruby-constant">OK</span>
+  <span class="ruby-keyword">else</span>
+    <span class="ruby-constant">DECLINED</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- handler-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- handler-method -->
+
+    
+    </section><!-- public-instance-method-details -->
+  
+     <section id="private-instance-5Buntitled-5D-method-details" class="method-section section">
+      <h3 class="section-header">Private Instance Methods</h3>
+
+    
+      <div id="method-i-copy" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">copy</span><span
+            class="method-args">(src, dest, stat = File.stat(src))</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>TODO: optimize?</p>
+          
+          
+
+          
+          <div class="method-source-code" id="copy-source">
+            <pre><span class="ruby-comment"># File lib/apache/upload_merger.rb, line 118</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">copy</span>(<span class="ruby-identifier">src</span>, <span class="ruby-identifier">dest</span>, <span class="ruby-identifier">stat</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">stat</span>(<span class="ruby-identifier">src</span>))
+  <span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>(<span class="ruby-identifier">src</span>) { <span class="ruby-operator">|</span><span class="ruby-identifier">src_</span><span class="ruby-operator">|</span>
+    <span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>(<span class="ruby-identifier">dest</span>, <span class="ruby-constant">CREATE_MODE</span>, <span class="ruby-identifier">stat</span>.<span class="ruby-identifier">mode</span>) { <span class="ruby-operator">|</span><span class="ruby-identifier">dest_</span><span class="ruby-operator">|</span>
+      <span class="ruby-constant">FileUtils</span>.<span class="ruby-identifier">copy_stream</span>(<span class="ruby-identifier">src_</span>, <span class="ruby-identifier">dest_</span>)
+    }
+  }
+<span class="ruby-keyword">rescue</span> <span class="ruby-constant">Errno</span><span class="ruby-operator">::</span><span class="ruby-constant">EEXIST</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- copy-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- copy-method -->
+
+    
+      <div id="method-i-copy_or_symlink" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">copy_or_symlink</span><span
+            class="method-args">(src, dest)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+          
+
+          
+          <div class="method-source-code" id="copy_or_symlink-source">
+            <pre><span class="ruby-comment"># File lib/apache/upload_merger.rb, line 107</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">copy_or_symlink</span>(<span class="ruby-identifier">src</span>, <span class="ruby-identifier">dest</span>)
+  <span class="ruby-identifier">stat</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">stat</span>(<span class="ruby-identifier">src</span>)
+  <span class="ruby-identifier">stat</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">&gt;</span> <span class="ruby-ivar">@strategy</span> <span class="ruby-operator">?</span> <span class="ruby-identifier">symlink</span>(<span class="ruby-identifier">src</span>, <span class="ruby-identifier">dest</span>) <span class="ruby-operator">:</span> <span class="ruby-identifier">copy</span>(<span class="ruby-identifier">src</span>, <span class="ruby-identifier">dest</span>, <span class="ruby-identifier">stat</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- copy_or_symlink-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- copy_or_symlink-method -->
+
+    
+      <div id="method-i-define_merger" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">define_merger</span><span
+            class="method-args">()</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+          
+
+          
+          <div class="method-source-code" id="define_merger-source">
+            <pre><span class="ruby-comment"># File lib/apache/upload_merger.rb, line 99</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">define_merger</span>
+  <span class="ruby-keyword">class</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-keyword">self</span>; <span class="ruby-keyword">self</span>; <span class="ruby-keyword">end</span>.<span class="ruby-identifier">send</span> <span class="ruby-value">:alias_method</span>, <span class="ruby-value">:merge</span>, <span class="ruby-keyword">case</span> <span class="ruby-ivar">@strategy</span>
+    <span class="ruby-keyword">when</span> <span class="ruby-value">:symlink</span>, <span class="ruby-value">:copy</span> <span class="ruby-keyword">then</span> <span class="ruby-ivar">@strategy</span>
+    <span class="ruby-keyword">when</span> <span class="ruby-constant">Integer</span>         <span class="ruby-keyword">then</span> <span class="ruby-value">:copy_or_symlink</span>
+    <span class="ruby-keyword">else</span> <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>, <span class="ruby-node">&quot;illegal strategy #{@strategy.inspect}&quot;</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- define_merger-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- define_merger-method -->
+
+    
+      <div id="method-i-find" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">find</span><span
+            class="method-args">(dir, path)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>TODO: make it fast <strong>and</strong> secure</p>
+          
+          
+
+          
+          <div class="method-source-code" id="find-source">
+            <pre><span class="ruby-comment"># File lib/apache/upload_merger.rb, line 92</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">find</span>(<span class="ruby-identifier">dir</span>, <span class="ruby-identifier">path</span>)
+  <span class="ruby-constant">Dir</span>[<span class="ruby-node">&quot;#{dir}/*/&quot;</span>].<span class="ruby-identifier">find</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">subdir</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">file</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-identifier">subdir</span>, <span class="ruby-identifier">path</span>).<span class="ruby-identifier">untaint</span>
+    <span class="ruby-keyword">return</span> <span class="ruby-identifier">file</span> <span class="ruby-keyword">if</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">exists?</span>(<span class="ruby-identifier">file</span>)
+  }
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- find-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- find-method -->
+
+    
+      <div id="method-i-symlink" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">symlink</span><span
+            class="method-args">(src, dest)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+          
+
+          
+          <div class="method-source-code" id="symlink-source">
+            <pre><span class="ruby-comment"># File lib/apache/upload_merger.rb, line 112</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">symlink</span>(<span class="ruby-identifier">src</span>, <span class="ruby-identifier">dest</span>)
+  <span class="ruby-constant">File</span>.<span class="ruby-identifier">symlink</span>(<span class="ruby-identifier">src</span>, <span class="ruby-identifier">dest</span>)
+<span class="ruby-keyword">rescue</span> <span class="ruby-constant">Errno</span><span class="ruby-operator">::</span><span class="ruby-constant">EEXIST</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- symlink-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- symlink-method -->
+
+    
+    </section><!-- private-instance-method-details -->
+  
+  </section><!-- 5Buntitled-5D -->
+
+</div><!-- documentation -->
+
+
+<footer id="validator-badges">
+  <p><a href="http://validator.w3.org/check/referer">[Validate]</a>
+  <p>Generated by <a href="https://github.com/rdoc/rdoc">RDoc</a> 4.0.1.
+  <p>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish Rdoc Generator</a> 3.
+</footer>
+

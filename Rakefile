@@ -8,14 +8,12 @@ begin
       :name         => %q{apache_upload_merger},
       :version      => Apache::UploadMerger::VERSION,
       :summary      => %q{Apache module providing upload merging functionality.},
-      :homepage     => 'http://github.com/blackwinter/apache_upload_merger',
-      :files        => FileList['lib/**/*.rb'].to_a,
-      :extra_files  => FileList['[A-Z]*'].to_a,
+      :author       => %q{Jens Wille},
+      :email        => %q{jens.wille@gmail.com},
+      :homepage     => :blackwinter,
       :dependencies => %w[]
     }
   }}
-rescue LoadError
-  abort "Please install the 'hen' gem first."
+rescue LoadError => err
+  abort "Please install the `hen' gem first. (#{err})"
 end
-
-### Place your custom Rake tasks here.

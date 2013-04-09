@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.authors = ["Jens Wille"]
   s.date = %q{2010-02-26}
   s.description = %q{Apache module providing upload merging functionality.}
-  s.email = %q{jens.wille@uni-koeln.de}
+  s.email = %q{jens.wille@gmail.com}
   s.extra_rdoc_files = ["COPYING", "ChangeLog", "README"]
   s.files = ["lib/apache/upload_merger.rb", "lib/apache/upload_merger/version.rb", "README", "ChangeLog", "Rakefile", "COPYING"]
   s.homepage = %q{http://github.com/blackwinter/apache_upload_merger}

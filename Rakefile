@@ -10,6 +10,7 @@ begin
       :summary      => %q{Apache module providing upload merging functionality.},
       :author       => %q{Jens Wille},
       :email        => %q{jens.wille@gmail.com},
+      :license      => %q{AGPL},
       :homepage     => :blackwinter,
       :dependencies => %w[]
     }
